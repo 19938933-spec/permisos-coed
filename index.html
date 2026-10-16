@@ -1,1 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redactar Permiso – Complejo Educativo Thomas Jefferson</title>
+  
+  <!-- Fuentes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Librerías para PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
+  
+  <div class="main-container">
+    <div class="card">
+      <div class="card2">
+        <form class="form" id="permisoForm">
+          
+          <div class="logo-header">
+            <img src="logo.png" alt="Logo Thomas Jefferson" class="logo-img" id="logoPreview">
+            <h1 id="heading">REDACTAR PERMISO</h1>
+            <p class="subtitle">Completa los datos para generar tu justificación de inasistencia</p>
+          </div>
+
+          <!-- Fila 1 -->
+          <div class="form-row">
+            <div class="field">
+              <label>Nombre del Encargado(a)</label>
+              <input type="text" id="nombreEncargado" class="input-field" placeholder="Ej: María Elena Hernández" required>
+            </div>
+            <div class="field">
+              <label>Nombre del Estudiante</label>
+              <input type="text" id="nombreEstudiante" class="input-field" placeholder="Ej: Juan Antonio Portillo" required>
+            </div>
+          </div>
+
+          <!-- Fila 2 -->
+          <div class="form-row">
+            <div class="field">
+              <label>Grado y Sección</label>
+              <select id="gradoSeccion" class="input-field" required>
+                <option value="" disabled selected>Selecciona tu opción</option>
+                
+                <optgroup label="PARVULARIA">
+                  <option value="Parvularia 4 - Sección A">Parvularia 4 - Sección A</option>
+                  <option value="Parvularia 4 - Sección B">Parvularia 4 - Sección B</option>
+                  <option value="Parvularia 5 - Sección A">Parvularia 5 - Sección A</option>
+                  <option value="Parvularia 5 - Sección B">Parvularia 5 - Sección B</option>
+                  <option value="Parvularia 6 - Sección A">Parvularia 6 - Sección A</option>
+                  <option value="Parvularia 6 - Sección B">Parvularia 6 - Sección B</option>
+                </optgroup>
+                
+                <optgroup label="EDUCACIÓN BÁSICA">
+                  <option value="1° Grado - Sección A">1° Grado - Sección A</option>
+                  <option value="2° Grado - Sección A">2° Grado - Sección A</option>
+                  <option value="3° Grado - Sección A">3° Grado - Sección A</option>
+                  <option value="4° Grado - Sección A">4° Grado - Sección A</option>
+                  <option value="5° Grado - Sección A">5° Grado - Sección A</option>
+                  <option value="6° Grado - Sección A">6° Grado - Sección A</option>
+                  <option value="7° Grado - Sección A">7° Grado - Sección A</option>
+                  <option value="8° Grado - Sección A">8° Grado - Sección A</option>
+                  <option value="9° Grado - Sección A">9° Grado - Sección A</option>
+                </optgroup>
+                
+                <optgroup label="BACHILLERATO GENERAL">
+                  <option value="1° General - Sección A">1° General - Sección A</option>
+                  <option value="1° General - Sección B">1° General - Sección B</option>
+                  <option value="2° General - Sección A">2° General - Sección A</option>
+                </optgroup>
+                
+                <optgroup label="BACHILLERATO CONTADOR (AC)">
+                  <option value="1° Contador - Sección A">1° Contador - Sección A</option>
+                  <option value="2° Contador - Sección A">2° Contador - Sección A</option>
+                  <option value="3° Contador - Sección A">3° Contador - Sección A</option>
+                </optgroup>
+                
+                <optgroup label="BACHILLERATO APS (Atención Primaria en Salud)">
+                  <option value="1° APS - Sección A">1° APS - Sección A</option>
+                  <option value="1° APS - Sección B">1° APS - Sección B</option>
+                  <option value="2° APS - Sección A">2° APS - Sección A</option>
+                  <option value="2° APS - Sección B">2° APS - Sección B</option>
+                  <option value="3° APS - Sección A">3° APS - Sección A</option>
+                  <option value="3° APS - Sección B">3° APS - Sección B</option>
+                </optgroup>
+                
+                <optgroup label="BACHILLERATO ITSI (Sistemas Informáticos)">
+                  <option value="1° ITSI - Sección A">1° ITSI - Sección A</option>
+                  <option value="2° ITSI - Sección A">2° ITSI - Sección A</option>
+                  <option value="3° ITSI - Sección A">3° ITSI - Sección A</option>
+                </optgroup>
+                
+                <optgroup label="BACHILLERATO SE (Sistemas Eléctricos)">
+                  <option value="1° SE - Sección A">1° SE - Sección A</option>
+                  <option value="1° SE - Sección B">1° SE - Sección B</option>
+                  <option value="2° SE - Sección A">2° SE - Sección A</option>
+                  <option value="2° SE - Sección B">2° SE - Sección B</option>
+                  <option value="3° SE - Sección A">3° SE - Sección A</option>
+                  <option value="3° SE - Sección B">3° SE - Sección B</option>
+                </optgroup>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Día(s) de Inasistencia</label>
+              <input type="text" id="diasInasistencia" class="input-field" placeholder="Ej: 12 y 13 de octubre de 2026" required>
+            </div>
+          </div>
+
+          <!-- Fila 3 -->
+          <div class="form-row">
+            <div class="field">
+              <label>Clasificación del Motivo</label>
+              <select id="clasificacionMotivo" class="input-field" required>
+                <option value="" disabled selected>Selecciona el motivo</option>
+                <option value="Constancia médica">Constancia médica</option>
+                <option value="Cita médica">Cita médica</option>
+                <option value="Situación familiar">Situación familiar</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Teléfono (8 dígitos)</label>
+              <input type="tel" id="telefono" class="input-field" placeholder="Ej: 7000-0000" maxlength="8" pattern="[0-9]{8}" inputmode="numeric" required>
+            </div>
+          </div>
+
+          <!-- Motivo -->
+          <div class="field full-width">
+            <label>Explica el Motivo</label>
+            <textarea id="motivo" class="input-field textarea" rows="3" placeholder="Ej: Fui al doctor..." required></textarea>
+            <button type="button" class="btn-explicacion" id="btnExplicacion">
+              ✨ Crear Explicación
+            </button>
+          </div>
+
+          <!-- Botón Generar -->
+          <div class="btn-container">
+            <button type="submit" class="btn" id="btnGenerar">
+              Generar Documento PDF
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  
+  <div id="loaderOverlay" class="loader-overlay hidden">
+    <div class="banter-loader">
+      <div class="banter-loader__box"></div>
+      <div class="banter-loader__box"></div>
+      <div class="banter-loader__box"></div>
+      <div class="banter-loader__box"></div>
+      <div class="banter-loader__box"></div>
+      <div class="banter-loader__box"></div>
+      <div class="banter-loader__box"></div>
+      <div class="banter-loader__box"></div>
+      <div class="banter-loader__box"></div>
+    </div>
+    <p class="loading-text">Generando permiso<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></p>
+  </div>
+
+
+
+  
+  <div id="previewSection" class="preview-section hidden">
+    <h2>Vista Previa del Permiso</h2>
+    
+    <div class="preview-actions">
+      <!-- Botón de descarga      -->
+      <div class="button" id="btnDescargar" data-tooltip="Descargar PDF">
+        <div class="button-wrapper">
+          <div class="text">Descargar</div>
+          <span class="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24">
+              <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15V3m0 12l-4-4m4 4l4-4M2 17l.621 2.485A2 2 0 0 0 4.561 21h14.878a2 2 0 0 0 1.94-1.515L22 17"></path>
+            </svg>
+          </span>
+        </div>
+      </div>
+
+      <button type="button" class="btn-secondary" id="btnNuevo">Crear otro permiso</button>
+    </div>
+
+    <!--          vista previa -->
+    <div id="pdfPreview" class="pdf-preview"></div>
+  </div>
+
+  <!-- Contenedor oculto para generar el PDF (plantilla oficial) -->
+  <div id="pdfTemplate" class="pdf-template hidden"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
