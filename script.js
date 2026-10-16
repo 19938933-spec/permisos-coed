@@ -59,7 +59,7 @@ btnExplicacion.addEventListener('click', () => {
       break;
 
     case 'Cita médica':
-      formal = `Debido a una cita médica previamente programada, ${nombreEstudiante} se le fue impeido de asistir a sus clases.`;
+      formal = `Debido a una cita médica previamente programada, ${nombreEstudiante} se le fue impedido de asistir a sus clases.`;
       break;
 
     case 'Situación familiar':
