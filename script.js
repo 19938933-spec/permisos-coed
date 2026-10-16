@@ -21,6 +21,32 @@ telefonoInput.addEventListener('input', (e) => {
   }
 });
 
+// ==================== CALENDARIO - BLOQUEAR SÁBADOS Y DOMINGOS ====================
+const fechaInput = document.getElementById('diasInasistencia');
+
+fechaInput.addEventListener('change', (e) => {
+  const fechaSeleccionada = new Date(e.target.value + 'T00:00:00'); // Evitar problemas de zona horaria
+  const diaSemana = fechaSeleccionada.getDay(); // 0 = Domingo, 6 = Sábado
+
+  if (diaSemana === 0 || diaSemana === 6) {
+    alert('No se pueden seleccionar sábados ni domingos.\nSolo se permiten días de lunes a viernes.');
+    e.target.value = ''; // Limpiar la fecha
+    e.target.focus();
+  }
+});
+
+// Opcional: evitar que se escriba una fecha de fin de semana manualmente
+fechaInput.addEventListener('input', (e) => {
+  if (e.target.value) {
+    const fecha = new Date(e.target.value + 'T00:00:00');
+    const dia = fecha.getDay();
+    if (dia === 0 || dia === 6) {
+      e.target.value = '';
+    }
+  }
+});
+
+
 // ==================== CREAR EXPLICACIÓN FORMAL (MEJORADA) ====================
 btnExplicacion.addEventListener('click', () => {
   const motivoCorto = motivoTextarea.value.trim();
