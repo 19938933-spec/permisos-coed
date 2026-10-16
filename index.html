@@ -18,7 +18,7 @@
 </head>
 <body>
 
-  
+  <!-- ==================== FORMULARIO PRINCIPAL ==================== -->
   <div class="main-container">
     <div class="card">
       <div class="card2">
@@ -111,10 +111,11 @@
             <div class="field">
               <label>Día(s) de Inasistencia</label>
               <input type="date" id="diasInasistencia" class="input-field" required>
-              <small style="color:#94a3b8; font-size:0.78rem; margin-top:4px;">
-               
+              <small style="color:#94a3b8; font-size:0.78rem; margin-top:4px; display:block;">
+                Solo se permiten días de lunes a viernes
               </small>
             </div>
+          </div> <!-- ← Este </div> era el que faltaba -->
 
           <!-- Fila 3 -->
           <div class="form-row">
@@ -140,7 +141,7 @@
             <label>Explica el Motivo</label>
             <textarea id="motivo" class="input-field textarea" rows="3" placeholder="Ej: Fui al doctor..." required></textarea>
             <button type="button" class="btn-explicacion" id="btnExplicacion">
-              ✨ Crear Explicación
+              ✨ Crear Explicación Formal
             </button>
           </div>
 
@@ -156,7 +157,7 @@
     </div>
   </div>
 
-  
+  <!-- ==================== LOADER ==================== -->
   <div id="loaderOverlay" class="loader-overlay hidden">
     <div class="banter-loader">
       <div class="banter-loader__box"></div>
@@ -172,14 +173,11 @@
     <p class="loading-text">Generando permiso<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></p>
   </div>
 
-
-
-  
+  <!-- ==================== VISTA PREVIA ==================== -->
   <div id="previewSection" class="preview-section hidden">
     <h2>Vista Previa del Permiso</h2>
     
     <div class="preview-actions">
-      <!-- Botón de descarga      -->
       <div class="button" id="btnDescargar" data-tooltip="Descargar PDF">
         <div class="button-wrapper">
           <div class="text">Descargar</div>
@@ -194,11 +192,9 @@
       <button type="button" class="btn-secondary" id="btnNuevo">Crear otro permiso</button>
     </div>
 
-    <!--          vista previa -->
     <div id="pdfPreview" class="pdf-preview"></div>
   </div>
 
-  <!-- Contenedor oculto para generar el PDF (plantilla oficial) -->
   <div id="pdfTemplate" class="pdf-template hidden"></div>
 
   <script src="script.js"></script>
