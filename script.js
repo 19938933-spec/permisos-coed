@@ -24,36 +24,59 @@ telefonoInput.addEventListener('input', (e) => {
   }
 });
 
-// ==================== CREAR EXPLICACIÓN FORMAL ====================
+// ==================== CREAR EXPLICACIÓN FORMAL (MEJORADA) ====================
 btnExplicacion.addEventListener('click', () => {
   const motivoCorto = motivoTextarea.value.trim();
   const clasificacion = document.getElementById('clasificacionMotivo').value;
-  const estudiante = document.getElementById('nombreEstudiante').value.trim() || 'el/la estudiante';
+  const estudianteRaw = document.getElementById('nombreEstudiante').value.trim();
+  const estudiante = estudianteRaw || 'el/la estudiante';
 
   if (!motivoCorto) {
     alert('Primero escribe una explicación breve del motivo.');
+    motivoTextarea.focus();
     return;
   }
 
+  // Capitalizar nombre del estudiante
+  const nombreEstudiante = estudianteRaw
+    ? estudianteRaw.toLowerCase().replace(/\b\w/g, l => l.toUpperCase())
+    : 'el/la estudiante';
+
   let formal = '';
+
+  // Función auxiliar para limpiar y capitalizar la primera letra
+  const capitalizar = (texto) => {
+    if (!texto) return '';
+    return texto.charAt(0).toUpperCase() + texto.slice(1).toLowerCase();
+  };
+
+  // Limpiamos el texto del usuario (quitamos puntos finales y lo normalizamos)
+  let motivoLimpio = motivoCorto.replace(/\.$/, '').trim();
 
   switch (clasificacion) {
     case 'Constancia médica':
-      formal = `Por motivos de salud, ${estudiante} no pudo asistir a clases. Se adjunta la constancia médica correspondiente que justifica la inasistencia. ${motivoCorto.charAt(0).toUpperCase() + motivoCorto.slice(1)}.`;
+      formal = `Por motivos de salud debidamente justificados, ${nombreEstudiante} no pudo presentarse a clases en la fecha indicada. ${capitalizar(motivoLimpio)}. Se adjunta la constancia médica correspondiente.`;
       break;
+
     case 'Cita médica':
-      formal = `Debido a una cita médica programada, ${estudiante} no asistió a clases en la fecha indicada. ${motivoCorto.charAt(0).toUpperCase() + motivoCorto.slice(1)}. Se solicita la debida justificación.`;
+      formal = `Debido a una cita médica previamente programada, ${nombreEstudiante} se vio imposibilitado(a) de asistir a sus labores académicas. ${capitalizar(motivoLimpio)}. Se solicita la debida justificación de la inasistencia.`;
       break;
+
     case 'Situación familiar':
-      formal = `Por una situación familiar de carácter urgente, ${estudiante} se vio impedido(a) de asistir a clases. ${motivoCorto.charAt(0).toUpperCase() + motivoCorto.slice(1)}. Agradezco de antemano la comprensión.`;
+      formal = `Por una situación familiar de carácter urgente e imprevisto, ${nombreEstudiante} no pudo asistir a clases. ${capitalizar(motivoLimpio)}. Agradezco de antemano la comprensión y se solicita respetuosamente la justificación correspondiente.`;
       break;
+
+    case 'Otro':
+      formal = `Por el motivo que a continuación se detalla, ${nombreEstudiante} no asistió a clases: ${capitalizar(motivoLimpio)}. Se solicita muy respetuosamente se tome en cuenta la presente justificación.`;
+      break;
+
     default:
-      formal = `Por el siguiente motivo: ${motivoCorto.charAt(0).toUpperCase() + motivoCorto.slice(1)}. Se solicita respetuosamente la justificación de la inasistencia de ${estudiante}.`;
+      formal = `Por el siguiente motivo, ${nombreEstudiante} no asistió a clases: ${capitalizar(motivoLimpio)}. Se solicita la justificación de la inasistencia.`;
   }
 
+  // Evitar que quede el texto original pegado
   motivoTextarea.value = formal;
 });
-
 // ==================== GENERAR PERMISO ====================
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
