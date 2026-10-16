@@ -72,23 +72,23 @@ btnExplicacion.addEventListener('click', () => {
 
   switch (clasificacion) {
     case 'Constancia médica':
-      formal = `Por motivos de salud debidamente justificados, ${nombreEstudiante} no pudo presentarse a clases en la fecha indicada. ${capitalizar(motivoLimpio)}. Se adjunta la constancia médica correspondiente.`;
+      formal = `Por motivos de salud debidamente justificados, ${nombreEstudiante} no pudo presentarse a clases en la fecha indicada. Se adjunta la constancia médica correspondiente.`;
       break;
 
     case 'Cita médica':
-      formal = `Debido a una cita médica previamente programada, ${nombreEstudiante} no pudo asistir a sus clases. ${capitalizar(motivoLimpio)}.`;
+      formal = `Debido a una cita médica previamente programada, ${nombreEstudiante} no pudo asistir a sus clases.`;
       break;
 
     case 'Situación familiar':
-      formal = `Por una situación familiar de carácter urgente e imprevisto, ${nombreEstudiante} no pudo asistir a clases. ${capitalizar(motivoLimpio)}. Agradezco de antemano la comprensión.`;
+      formal = `Por una situación familiar de carácter urgente e imprevisto, ${nombreEstudiante} no pudo asistir a clases. Agradezco de antemano la comprensión.`;
       break;
 
     case 'Otro':
-      formal = `Por el siguiente motivo, ${nombreEstudiante} no asistió a clases: ${capitalizar(motivoLimpio)}. Se solicita muy respetuosamente se tome en cuenta la presente justificación.`;
+      formal = `Por motivo de fuerza mayor, ${nombreEstudiante} no asistió a clases. Se solicita muy respetuosamente se tome en cuenta la presente justificación.`;
       break;
 
     default:
-      formal = `Por el siguiente motivo, ${nombreEstudiante} no asistió a clases: ${capitalizar(motivoLimpio)}.`;
+      formal = `Por un motivo de fuerza mayor, ${nombreEstudiante} no asistió a clases, atentamente madre del estudiante.`;
   }
 
   motivoTextarea.value = formal;
