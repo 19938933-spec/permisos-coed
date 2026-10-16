@@ -15,10 +15,7 @@ let pdfDoc = null;
 
 // ==================== VALIDACIÓN TELÉFONO (solo 8 dígitos) ====================
 telefonoInput.addEventListener('input', (e) => {
-  // Solo permitir números
   e.target.value = e.target.value.replace(/\D/g, '');
-  
-  // Limitar a 8 dígitos
   if (e.target.value.length > 8) {
     e.target.value = e.target.value.slice(0, 8);
   }
@@ -29,7 +26,6 @@ btnExplicacion.addEventListener('click', () => {
   const motivoCorto = motivoTextarea.value.trim();
   const clasificacion = document.getElementById('clasificacionMotivo').value;
   const estudianteRaw = document.getElementById('nombreEstudiante').value.trim();
-  const estudiante = estudianteRaw || 'el/la estudiante';
 
   if (!motivoCorto) {
     alert('Primero escribe una explicación breve del motivo.');
@@ -42,16 +38,14 @@ btnExplicacion.addEventListener('click', () => {
     ? estudianteRaw.toLowerCase().replace(/\b\w/g, l => l.toUpperCase())
     : 'el/la estudiante';
 
-  let formal = '';
-
-  // Función auxiliar para limpiar y capitalizar la primera letra
+  // Limpiar y capitalizar el motivo del usuario
   const capitalizar = (texto) => {
     if (!texto) return '';
-    return texto.charAt(0).toUpperCase() + texto.slice(1).toLowerCase();
+    return texto.charAt(0).toUpperCase() + texto.slice(1).trim();
   };
 
-  // Limpiamos el texto del usuario (quitamos puntos finales y lo normalizamos)
   let motivoLimpio = motivoCorto.replace(/\.$/, '').trim();
+  let formal = '';
 
   switch (clasificacion) {
     case 'Constancia médica':
@@ -59,29 +53,28 @@ btnExplicacion.addEventListener('click', () => {
       break;
 
     case 'Cita médica':
-      formal = `Debido a una cita médica previamente programada, ${nombreEstudiante} se le fue impedido de asistir a sus clases.`;
+      formal = `Debido a una cita médica previamente programada, ${nombreEstudiante} no pudo asistir a sus clases. ${capitalizar(motivoLimpio)}.`;
       break;
 
     case 'Situación familiar':
-      formal = `Por una situación familiar de carácter urgente e imprevisto, ${nombreEstudiante} no pudo asistir a clases. Agradezco de antemano la comprensión.`;
+      formal = `Por una situación familiar de carácter urgente e imprevisto, ${nombreEstudiante} no pudo asistir a clases. ${capitalizar(motivoLimpio)}. Agradezco de antemano la comprensión.`;
       break;
 
     case 'Otro':
-      formal = `Por el motivo urgente, ${nombreEstudiante} no asistió a clases. Se solicita muy respetuosamente se tome en cuenta la presente justificación.`;
+      formal = `Por el siguiente motivo, ${nombreEstudiante} no asistió a clases: ${capitalizar(motivoLimpio)}. Se solicita muy respetuosamente se tome en cuenta la presente justificación.`;
       break;
 
     default:
-      formal = `Por el siguiente motivo, ${nombreEstudiante} no asistió a clases.`;
+      formal = `Por el siguiente motivo, ${nombreEstudiante} no asistió a clases: ${capitalizar(motivoLimpio)}.`;
   }
 
-  // Evitar que quede el texto original pegado
   motivoTextarea.value = formal;
 });
+
 // ==================== GENERAR PERMISO ====================
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  // Validaciones
   const telefono = telefonoInput.value.trim();
   if (telefono.length !== 8) {
     alert('El teléfono debe tener exactamente 8 dígitos numéricos.');
@@ -93,8 +86,7 @@ form.addEventListener('submit', async (e) => {
   loaderOverlay.classList.remove('hidden');
   document.querySelector('.main-container').style.display = 'none';
 
-  // Pequeña pausa para que se vea el loader
-  await new Promise(resolve => setTimeout(resolve, 1800));
+  await new Promise(resolve => setTimeout(resolve, 1600));
 
   try {
     await generarPDF();
@@ -110,7 +102,6 @@ form.addEventListener('submit', async (e) => {
 async function generarPDF() {
   const { jsPDF } = window.jspdf;
 
-  // Datos del formulario
   const data = {
     encargado: document.getElementById('nombreEncargado').value.trim(),
     estudiante: document.getElementById('nombreEstudiante').value.trim(),
@@ -122,74 +113,79 @@ async function generarPDF() {
     fecha: obtenerFechaActual()
   };
 
-  // Crear el documento PDF (tamaño carta / A4)
+  // Capitalizar nombres
+  const capitalizarNombre = (nombre) => {
+    return nombre.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+  };
+  data.encargado = capitalizarNombre(data.encargado);
+  data.estudiante = capitalizarNombre(data.estudiante);
+
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
-    format: 'letter' // 215.9 x 279.4 mm
+    format: 'letter'
   });
 
   // === LOGO ===
-  // Cargamos el logo como imagen base64 o desde archivo
   const logoImg = document.getElementById('logoPreview');
-  
-  // Convertir logo a base64 para jsPDF
   const logoBase64 = await getBase64Image(logoImg);
-
-  // Dibujar logo (izquierda superior)
-  doc.addImage(logoBase64, 'PNG', 15, 12, 28, 28);
+  doc.addImage(logoBase64, 'PNG', 15, 10, 26, 26);
 
   // === ENCABEZADO ===
   doc.setFont('times', 'bold');
-  doc.setFontSize(14);
-  doc.text('COMPLEJO EDUCATIVO THOMAS JEFFERSON', 105, 20, { align: 'center' });
+  doc.setFontSize(13);
+  doc.text('COMPLEJO EDUCATIVO THOMAS JEFFERSON', 105, 18, { align: 'center' });
 
   doc.setFont('times', 'italic');
-  doc.setFontSize(9);
-  doc.text('"Somos lo que hacemos día a día, de modo que la excelencia no es un acto, sino un hábito"', 105, 27, { align: 'center' });
+  doc.setFontSize(8.5);
+  doc.text('"Somos lo que hacemos día a día, de modo que la excelencia no es un acto, sino un hábito"', 105, 24, { align: 'center' });
 
-  // Línea separadora
-  doc.setDrawColor(0);
-  doc.setLineWidth(0.4);
-  doc.line(20, 33, 195, 33);
+  // Línea
+  doc.setDrawColor(30, 60, 120);
+  doc.setLineWidth(0.5);
+  doc.line(18, 30, 197, 30);
 
-  // Título del formato
+  // Título
   doc.setFont('times', 'bold');
-  doc.setFontSize(12);
-  doc.text('FORMATO DE SOLICITUD DE PERMISOS POR INASISTENCIA', 105, 42, { align: 'center' });
+  doc.setFontSize(11.5);
+  doc.setTextColor(0);
+  doc.text('FORMATO DE SOLICITUD DE PERMISOS POR INASISTENCIA', 105, 38, { align: 'center' });
 
-  // === CUERPO DEL DOCUMENTO ===
+  // === CUERPO ===
   doc.setFont('times', 'normal');
-  doc.setFontSize(11);
+  doc.setFontSize(10.5);
 
-  let y = 55;
+  let y = 50;
 
   // Fecha
   doc.text(`Fecha: ${data.fecha}`, 20, y);
-  y += 12;
+  y += 11;
 
   // Presentación
   doc.text(`Por medio de la presente, yo, ${data.encargado},`, 20, y);
-  y += 7;
+  y += 6.5;
   doc.text(`padre/madre o encargado(a) del estudiante: ${data.estudiante}`, 20, y);
-  y += 10;
+  y += 9;
 
-  // Grado / Sección
+  // Grado
   doc.text(`Grado / Sección: ${data.grado}`, 20, y);
-  y += 10;
+  y += 9;
 
   // Días
   doc.text(`Hago constar que el día(s): ${data.dias}`, 20, y);
-  y += 10;
+  y += 9;
 
   // Motivo
-  const motivoLines = doc.splitTextToSize(`El/La estudiante no asistió a clases debido a: ${data.motivo}`, 175);
+  const motivoTexto = `El/La estudiante no asistió a clases debido a: ${data.motivo}`;
+  const motivoLines = doc.splitTextToSize(motivoTexto, 175);
   doc.text(motivoLines, 20, y);
-  y += (motivoLines.length * 6) + 8;
+  y += (motivoLines.length * 5.5) + 8;
 
   // Evidencia
+  doc.setFont('times', 'bold');
   doc.text('Adjunto evidencia (si aplica):', 20, y);
-  y += 8;
+  doc.setFont('times', 'normal');
+  y += 7;
 
   // Checkboxes
   const checks = [
@@ -199,82 +195,96 @@ async function generarPDF() {
     { label: 'Otro', value: 'Otro' }
   ];
 
-  let xPos = 25;
-  checks.forEach((item, index) => {
-    // Cuadro
-    doc.rect(xPos, y - 3.5, 4, 4);
-    
-    // Marcar si corresponde
+  let xPos = 22;
+  checks.forEach((item) => {
+    doc.setDrawColor(0);
+    doc.setLineWidth(0.3);
+    doc.rect(xPos, y - 3.2, 3.8, 3.8);
+
     if (data.clasificacion === item.value) {
       doc.setFont('times', 'bold');
-      doc.text('X', xPos + 0.8, y);
+      doc.setFontSize(11);
+      doc.text('X', xPos + 0.7, y + 0.3);
       doc.setFont('times', 'normal');
+      doc.setFontSize(10.5);
     }
 
-    doc.text(item.label, xPos + 6, y);
-    xPos += 45;
+    doc.text(item.label, xPos + 5.5, y);
+    xPos += 44;
   });
 
-  // Si es "Otro", mostrar línea
-  if (data.clasificacion === 'Otro') {
-    y += 8;
-    doc.text(`Otro: ${data.motivo.substring(0, 60)}...`, 25, y);
-  }
-
-  y += 14;
+  y += 12;
 
   // Solicitud
   const solicitud = 'Solicito muy respetuosamente se tome en cuenta la presente justificación y se le permita ponerse al día con las actividades académicas correspondientes.';
   const solLines = doc.splitTextToSize(solicitud, 175);
   doc.text(solLines, 20, y);
-  y += (solLines.length * 6) + 12;
+  y += (solLines.length * 5.5) + 11;
 
   // Firma del padre
-  doc.text('Firma del padre/madre o encargado: _______________________________', 20, y);
-  y += 10;
-
-  doc.text(`Nombre completo: ${data.encargado}`, 20, y);
-  doc.text(`Número de contacto: ${data.telefono}`, 120, y);
-  y += 14;
-
-  // Uso exclusivo de la institución
-  doc.setFont('times', 'bold');
-  doc.text('Uso exclusivo de la institución', 20, y);
-  doc.setFont('times', 'normal');
+  doc.text('Firma del padre/madre o encargado: ________________________________', 20, y);
   y += 9;
 
-  // Checkboxes de aceptación
-  doc.rect(25, y - 3.5, 4, 4);
-  doc.text('Justificación aceptada', 32, y);
-
-  doc.rect(85, y - 3.5, 4, 4);
-  doc.text('Justificación rechazada', 92, y);
-
-  doc.text('Observaciones: _______________________________', 145, y);
+  doc.text(`Nombre completo: ${data.encargado}`, 20, y);
+  doc.text(`Número de contacto: ${data.telefono}`, 115, y);
   y += 14;
 
-  // Firma del docente
-  doc.text('Nombre y Firma del docente: _______________________________', 20, y);
-  doc.text('Fecha de revisión: ____ / ____ / ________', 130, y);
+  // ======================================================
+  //  CUADRO "USO EXCLUSIVO DE LA INSTITUCIÓN"
+  // ======================================================
+  const boxX = 18;
+  const boxY = y;
+  const boxWidth = 179;
+  const boxHeight = 38;
 
-  // Guardar el documento
+  doc.setDrawColor(30, 60, 120);
+  doc.setLineWidth(0.6);
+  doc.rect(boxX, boxY, boxWidth, boxHeight);
+
+  // Título del cuadro
+  doc.setFont('times', 'bold');
+  doc.setFontSize(10.5);
+  doc.text('Uso exclusivo de la institución', boxX + 4, boxY + 6);
+
+  // Línea debajo del título
+  doc.setLineWidth(0.3);
+  doc.line(boxX + 3, boxY + 8, boxX + boxWidth - 3, boxY + 8);
+
+  doc.setFont('times', 'normal');
+  doc.setFontSize(10);
+
+  // Checkboxes
+  doc.rect(boxX + 6, boxY + 14, 3.8, 3.8);
+  doc.text('Justificación aceptada', boxX + 12, boxY + 17);
+
+  doc.rect(boxX + 70, boxY + 14, 3.8, 3.8);
+  doc.text('Justificación rechazada', boxX + 76, boxY + 17);
+
+  // Observaciones
+  doc.text('Observaciones: _______________________________________________', boxX + 6, boxY + 27);
+
+  // Firma docente + fecha
+  doc.text('Nombre y Firma del docente: _______________________________', boxX + 6, boxY + 35);
+  doc.text('Fecha de revisión: ____ / ____ / ________', boxX + 115, boxY + 35);
+
+  // ======================================================
+
+  // Guardar documento
   pdfDoc = doc;
 
-  // Generar vista previa (imagen)
-  const pdfBlob = doc.output('blob');
-  const pdfUrl = URL.createObjectURL(pdfBlob);
+  // === VISTA PREVIA REAL (iframe) ===
+  const pdfDataUri = doc.output('datauristring');
 
-  // Convertir primera página a imagen para preview
-  const canvas = await html2canvasFromPDF(doc);
-  
-  pdfPreview.innerHTML = '';
-  const img = document.createElement('img');
-  img.src = canvas.toDataURL('image/png');
-  img.style.width = '100%';
-  img.style.borderRadius = '6px';
-  pdfPreview.appendChild(img);
+  pdfPreview.innerHTML = `
+    <iframe 
+      src="${pdfDataUri}" 
+      width="100%" 
+      height="720px" 
+      style="border: none; border-radius: 8px; background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+    </iframe>
+  `;
 
-  // Ocultar loader y mostrar preview
+  // Mostrar preview
   loaderOverlay.classList.add('hidden');
   previewSection.classList.remove('hidden');
 }
@@ -290,40 +300,26 @@ function obtenerFechaActual() {
 
 function getBase64Image(img) {
   return new Promise((resolve) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = img.naturalWidth || 200;
-    canvas.height = img.naturalHeight || 200;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0);
-    resolve(canvas.toDataURL('image/png'));
+    if (img.complete && img.naturalWidth > 0) {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL('image/png'));
+    } else {
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL('image/png'));
+      };
+      // Fallback por si el logo no carga
+      setTimeout(() => resolve(''), 1500);
+    }
   });
-}
-
-// Crear una representación visual simple del PDF para la vista previa
-async function html2canvasFromPDF(doc) {
-  // Como alternativa más fiable, generamos un canvas blanco con el contenido
-  // (jsPDF no tiene método nativo de preview fácil, así que usamos el output)
-  const canvas = document.createElement('canvas');
-  canvas.width = 794;  // approx letter width @ 96dpi
-  canvas.height = 1123;
-  const ctx = canvas.getContext('2d');
-  
-  // Fondo blanco
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Nota: para una preview perfecta se recomienda usar pdf.js, 
-  // pero para mantenerlo simple y sin dependencias extra,
-  // devolvemos el canvas y el usuario descarga el PDF real.
-  // En la práctica el botón de descarga da el PDF exacto.
-
-  // Como mejora rápida: mostramos un mensaje + el PDF se descarga limpio
-  ctx.fillStyle = '#333';
-  ctx.font = '16px Times New Roman';
-  ctx.textAlign = 'center';
-  ctx.fillText('Vista previa generada. Usa el botón "Descargar" para obtener el PDF oficial.', canvas.width / 2, 80);
-
-  return canvas;
 }
 
 // ==================== BOTÓN DESCARGAR ====================
