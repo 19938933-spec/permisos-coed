@@ -9,6 +9,7 @@ const btnDescargar = document.getElementById('btnDescargar');
 const btnNuevo = document.getElementById('btnNuevo');
 const telefonoInput = document.getElementById('telefono');
 const motivoTextarea = document.getElementById('motivo');
+const fechaInput = document.getElementById('diasInasistencia');
 
 // Variable global para el PDF generado
 let pdfDoc = null;
@@ -22,20 +23,19 @@ telefonoInput.addEventListener('input', (e) => {
 });
 
 // ==================== CALENDARIO - BLOQUEAR SÁBADOS Y DOMINGOS ====================
-const fechaInput = document.getElementById('diasInasistencia');
-
 fechaInput.addEventListener('change', (e) => {
-  const fechaSeleccionada = new Date(e.target.value + 'T00:00:00'); // Evitar problemas de zona horaria
+  if (!e.target.value) return;
+
+  const fechaSeleccionada = new Date(e.target.value + 'T00:00:00');
   const diaSemana = fechaSeleccionada.getDay(); // 0 = Domingo, 6 = Sábado
 
   if (diaSemana === 0 || diaSemana === 6) {
     alert('No se pueden seleccionar sábados ni domingos.\nSolo se permiten días de lunes a viernes.');
-    e.target.value = ''; // Limpiar la fecha
+    e.target.value = '';
     e.target.focus();
   }
 });
 
-// Opcional: evitar que se escriba una fecha de fin de semana manualmente
 fechaInput.addEventListener('input', (e) => {
   if (e.target.value) {
     const fecha = new Date(e.target.value + 'T00:00:00');
@@ -46,8 +46,7 @@ fechaInput.addEventListener('input', (e) => {
   }
 });
 
-
-// ==================== CREAR EXPLICACIÓN FORMAL (MEJORADA) ====================
+// ==================== CREAR EXPLICACIÓN FORMAL ====================
 btnExplicacion.addEventListener('click', () => {
   const motivoCorto = motivoTextarea.value.trim();
   const clasificacion = document.getElementById('clasificacionMotivo').value;
@@ -59,12 +58,10 @@ btnExplicacion.addEventListener('click', () => {
     return;
   }
 
-  // Capitalizar nombre del estudiante
   const nombreEstudiante = estudianteRaw
     ? estudianteRaw.toLowerCase().replace(/\b\w/g, l => l.toUpperCase())
     : 'el/la estudiante';
 
-  // Limpiar y capitalizar el motivo del usuario
   const capitalizar = (texto) => {
     if (!texto) return '';
     return texto.charAt(0).toUpperCase() + texto.slice(1).trim();
@@ -108,6 +105,12 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
+  if (!fechaInput.value) {
+    alert('Debes seleccionar una fecha de inasistencia.');
+    fechaInput.focus();
+    return;
+  }
+
   // Mostrar loader
   loaderOverlay.classList.remove('hidden');
   document.querySelector('.main-container').style.display = 'none';
@@ -132,7 +135,7 @@ async function generarPDF() {
     encargado: document.getElementById('nombreEncargado').value.trim(),
     estudiante: document.getElementById('nombreEstudiante').value.trim(),
     grado: document.getElementById('gradoSeccion').value,
-    dias: document.getElementById('diasInasistencia').value.trim(),
+    dias: formatearFecha(document.getElementById('diasInasistencia').value),
     clasificacion: document.getElementById('clasificacionMotivo').value,
     telefono: document.getElementById('telefono').value.trim(),
     motivo: document.getElementById('motivo').value.trim(),
@@ -155,7 +158,9 @@ async function generarPDF() {
   // === LOGO ===
   const logoImg = document.getElementById('logoPreview');
   const logoBase64 = await getBase64Image(logoImg);
-  doc.addImage(logoBase64, 'PNG', 15, 10, 26, 26);
+  if (logoBase64) {
+    doc.addImage(logoBase64, 'PNG', 15, 10, 26, 26);
+  }
 
   // === ENCABEZADO ===
   doc.setFont('times', 'bold');
@@ -324,6 +329,22 @@ function obtenerFechaActual() {
   return `${dia} / ${mes} / ${anio}`;
 }
 
+function formatearFecha(fechaISO) {
+  if (!fechaISO) return '';
+  
+  const fecha = new Date(fechaISO + 'T00:00:00');
+  const opciones = { 
+    weekday: 'long', 
+    day: 'numeric', 
+    month: 'long', 
+    year: 'numeric' 
+  };
+  // Ejemplo: "miércoles, 15 de octubre de 2026"
+  let fechaFormateada = fecha.toLocaleDateString('es-ES', opciones);
+  // Capitalizar la primera letra
+  return fechaFormateada.charAt(0).toUpperCase() + fechaFormateada.slice(1);
+}
+
 function getBase64Image(img) {
   return new Promise((resolve) => {
     if (img.complete && img.naturalWidth > 0) {
@@ -342,7 +363,6 @@ function getBase64Image(img) {
         ctx.drawImage(img, 0, 0);
         resolve(canvas.toDataURL('image/png'));
       };
-      // Fallback por si el logo no carga
       setTimeout(() => resolve(''), 1500);
     }
   });
