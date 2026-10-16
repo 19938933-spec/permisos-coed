@@ -59,19 +59,19 @@ btnExplicacion.addEventListener('click', () => {
       break;
 
     case 'Cita médica':
-      formal = `Debido a una cita médica previamente programada, ${nombreEstudiante} se vio imposibilitado(a) de asistir a sus labores académicas. ${capitalizar(motivoLimpio)}. Se solicita la debida justificación de la inasistencia.`;
+      formal = `Debido a una cita médica previamente programada, ${nombreEstudiante} se le fue impeido de asistir a sus clases.`;
       break;
 
     case 'Situación familiar':
-      formal = `Por una situación familiar de carácter urgente e imprevisto, ${nombreEstudiante} no pudo asistir a clases. ${capitalizar(motivoLimpio)}. Agradezco de antemano la comprensión y se solicita respetuosamente la justificación correspondiente.`;
+      formal = `Por una situación familiar de carácter urgente e imprevisto, ${nombreEstudiante} no pudo asistir a clases. Agradezco de antemano la comprensión.`;
       break;
 
     case 'Otro':
-      formal = `Por el motivo que a continuación se detalla, ${nombreEstudiante} no asistió a clases: ${capitalizar(motivoLimpio)}. Se solicita muy respetuosamente se tome en cuenta la presente justificación.`;
+      formal = `Por el motivo urgente, ${nombreEstudiante} no asistió a clases. Se solicita muy respetuosamente se tome en cuenta la presente justificación.`;
       break;
 
     default:
-      formal = `Por el siguiente motivo, ${nombreEstudiante} no asistió a clases: ${capitalizar(motivoLimpio)}. Se solicita la justificación de la inasistencia.`;
+      formal = `Por el siguiente motivo, ${nombreEstudiante} no asistió a clases.`;
   }
 
   // Evitar que quede el texto original pegado
